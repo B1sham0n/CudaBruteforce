@@ -6,5 +6,5 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust/detail/a
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust/detail/allocator/allocator_traits.inl(297): warning : calling a __host__ function("std::_Iterator_base12::~_Iterator_base12") from a __host__ __device__ function("std::_Iterator_base12::~_Iterator_base12 [subobject]") is not allowed
   
   kernel.cu
-     Создается библиотека D:\Диплом\Project\Bruteforce\x64\Debug\Bruteforce.lib и объект D:\Диплом\Project\Bruteforce\x64\Debug\Bruteforce.exp
+D:/Диплом/Project/Bruteforce/Bruteforce/kernel.cu(22): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
   Bruteforce.vcxproj -> D:\Диплом\Project\Bruteforce\x64\Debug\Bruteforce.exe

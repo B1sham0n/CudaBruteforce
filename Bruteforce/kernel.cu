@@ -1,4 +1,5 @@
 #include <thrust/host_vector.h>
+#include <thrust/device_vector.h>
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
@@ -7,14 +8,30 @@
 #include <iostream>
 #include "../libs/src/hl_md5.h"
 using namespace std;
-cudaError_t addWithCuda(int *c, const int *a, const int *b, unsigned int size);
 
-__global__ void addKernel(int *c, const int *a, const int *b)
-{
-    int i = threadIdx.x;
-    c[i] = a[i] + b[i];
-}
+cudaError_t addWithCuda(int* c, const int* a, const int* b, unsigned int size);
 
+//хотела использовать как обертку для массива с паролями, но так не сработало
+class __vector {
+public:
+    //char password[size];
+    char* password;
+    int* passw;
+    int size;
+    __device__ __host__ __vector(string pass) {
+        size = pass.length();
+        password = new char[size];
+        strcpy(password, pass.c_str());
+
+        passw = new int[size];
+        for (int i = 0; i < size; i++)
+            passw[i] = password[i];
+
+    }
+
+};
+
+//возвращает массив с алфавитом из строчных и заглавных букв
 thrust::host_vector<char> GetLetters() {
     vector<char> letters;
     unsigned char a;
@@ -29,6 +46,7 @@ thrust::host_vector<char> GetLetters() {
     return letters;
 }
 
+//печатает все варианты комбинаций символов chars
 void printCombinations(const thrust::host_vector<char>& chars, unsigned size, thrust::host_vector<char>& line, ofstream& myfile) {
     for (unsigned i = 0; i < chars.size(); i++) {
         line.push_back(chars[i]);
@@ -44,9 +62,37 @@ void printCombinations(const thrust::host_vector<char>& chars, unsigned size, th
         }
     }
 }
+thrust::host_vector<string> FileToVector(string file_name) {
+
+    // Open the File
+    std::ifstream in(file_name);
+    thrust::host_vector<string> pass_vector;
+    string str;
+    while (std::getline(in, str))
+    {
+        // Line contains string of length > 0 then save it in vector
+        if (str.size() > 0)
+            pass_vector.push_back(str);
+    }
+
+    return pass_vector;
+}
+
+//метод, который передается в поток на GPU. просто выводит длину пароля у данного потока и сам пароль(кол-во потоков = кол-во паролей) 
+__global__ void SearchPassword(char **passwords, int *sizes) {
+    printf("Size: %d \n", sizes[threadIdx.x]);
+    //printf("Size: %c \n", passwords[0][0]);
+    for(int i = 0; i < sizes[threadIdx.x]; i++)
+        printf("Passw: %c \n", passwords[threadIdx.x][i]);
+}
+
 int main()
 {
-    ofstream myfile;
+#pragma region MyRegion
+
+
+
+    /*ofstream myfile;
     myfile.open("example.txt");
 
     vector<char> numbers = { 'A', '1', 'B', '3' };
@@ -57,34 +103,101 @@ int main()
     }
     cout << endl;
     myfile.close();
+    */
+    /*thrust::host_vector<string> passwords = FileToVector("example.txt");
+    for each (string var in passwords)
+    {
+        cout << var << endl;
+    }*/
+#pragma endregion
 
-    const int arraySize = 5;
-    const int a[arraySize] = { 1, 2, 3, 4, 5 };
-    const int b[arraySize] = { 10, 20, 30, 40, 50 };
-    int c[arraySize] = { 0 };
+    //считать варианты паролей из файла - FileToVector(file)
+    //записать пароли в файл - printCombinations, потом планируется сделать без файла, это пока тест
+  
+    //thrust::host_vector<string> passwords = FileToVector("example.txt");
+    //cout << passwords.size() << endl;
 
-    // Add vectors in parallel.
-    cudaError_t cudaStatus = addWithCuda(c, a, b, arraySize);
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "addWithCuda failed!");
-        return 1;
+    //создание двумерного массива с паролями, строка массива = пароль, длина пароля может быть переменной и сохраняется в массив sizes[номер строки]
+    const int lines = 10, columns = 4; 
+    char** passw = new char* [lines];//массив с паролями
+    int* sizes = new int[lines];//массив с длинами строк
+
+    //просто рандомное заполнение массива, чтобы проверить работу
+    for (int i = 0; i < lines; i++) {
+        if (i % 2 == 0) {
+            passw[i] = new char[columns];
+            //col = 4;
+            sizes[i] = 4;
+        }
+        else {
+            passw[i] = new char[columns + 1];
+            //col = 5;
+            sizes[i] = 5;
+        }
+        for (int j = 0; j < sizes[i]; j++) {
+            switch (j)
+            {
+            case 0:
+                passw[i][j] = 'p';
+                break;
+            case 1:
+                passw[i][j] = 'a';
+                break;
+            case 2:
+                passw[i][j] = 's';
+                break;
+            case 3:
+                passw[i][j] = 's';
+                break;
+            case 4:
+                passw[i][j] = 'w';
+                break;
+            }
+        }
+    }
+    //вывод массива с паролями для проверки
+    /*
+    for (int i = 0; i < lines; i++) {
+        for (int j = 0; j < sizes[i]; j++)
+        {
+            cout << passw[i][j];
+        }
+        cout << endl;
+    }
+    */
+
+    char** dev_device_passw;//указатель на двумерный массив, который мы передадим в gpu
+    cudaMalloc((void**)&dev_device_passw, lines * sizeof(char*));//выделяем память на видеокарте и сохраняем указатель на нее в dev_device_passw. второй параметр - кол-во памяти, мб указан неверно
+
+    char* dev_line_passw[lines];//указатель на одномерный массив указателей размерном lines, чтобы в него сохранить каждую строку исходного массива с паролями
+    for (int i = 0; i < lines; i++) {
+        cudaMalloc((void**)&dev_line_passw[i], sizeof(char) * sizes[i]);
+        cudaMemcpy(dev_line_passw[i], passw[i], sizeof(char) * sizes[i], cudaMemcpyHostToDevice);
     }
 
-    printf("{1,2,3,4,5} + {10,20,30,40,50} = {%d,%d,%d,%d,%d}\n",
-        c[0], c[1], c[2], c[3], c[4]);
+    cudaMemcpy(dev_device_passw, dev_line_passw, sizeof(char*) * lines, cudaMemcpyHostToDevice);//копируем в указатель dev_device_passw указатель на память dev_line_passw
 
-    // cudaDeviceReset must be called before exiting in order for profiling and
-    // tracing tools such as Nsight and Visual Profiler to show complete traces.
-    cudaStatus = cudaDeviceReset();
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaDeviceReset failed!");
-        return 1;
-    }
+    int* dev_sizes;//указатель для передачи массива с размерами строк
+
+    cudaMalloc((void**)&dev_sizes, sizeof(int) * lines);//выделяем память размером с массив
+    cudaMemcpy(dev_sizes, sizes, sizeof(int) * lines,cudaMemcpyHostToDevice);//копируем указатель на массив sizes 
+
+    SearchPassword <<<1, 10 >>> (dev_device_passw, dev_sizes);//запуск массива потоков [1][10] (т.е. 1 строка потоков из 10 потоков = 10 потоков), ошибка так и должна быть
+
+    //освобождаем выделенную память на GPU
+    cudaFree(dev_device_passw);
+    cudaFree(dev_sizes);
+    cudaFree(dev_line_passw);
 
     return 0;
 }
 
-// Helper function for using CUDA to add vectors in parallel.
+//эти два метода были при создании проекта, можно использовать как пример передачи указателей в GPU
+__global__ void addKernel(int* c, const int* a, const int* b)
+{
+    int i = threadIdx.x;
+    c[i] = a[i] + b[i];
+}
 cudaError_t addWithCuda(int *c, const int *a, const int *b, unsigned int size)
 {
     int *dev_a = 0;
@@ -163,3 +276,5 @@ Error:
     
     return cudaStatus;
 }
+
+

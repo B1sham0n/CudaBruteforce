@@ -183,6 +183,9 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\c
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\copy_if.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\count.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\cstdint.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\device_ptr.inl
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\device_reference.inl
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\device_vector.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\distance.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\equal.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\execute_with_allocator.h
@@ -273,6 +276,10 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\u
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\use_default.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\vector_base.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\detail\vector_base.inl
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\device_allocator.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\device_ptr.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\device_reference.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\device_vector.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\distance.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\equal.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\execution_policy.h
@@ -321,8 +328,17 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\iterator
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\iterator\transform_iterator.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\iterator\zip_iterator.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\memory.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\memory\detail\device_system_resource.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\memory\detail\host_system_resource.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\merge.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\mismatch.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\mr\allocator.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\mr\detail\config.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\mr\fancy_pointer_resource.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\mr\memory_resource.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\mr\new.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\mr\polymorphic_adaptor.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\mr\validator.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\pair.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\partition.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\reduce.h
@@ -358,6 +374,7 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\c
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cpp\detail\mismatch.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cpp\detail\par.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cpp\detail\partition.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cpp\detail\pointer.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cpp\detail\reduce.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cpp\detail\reduce_by_key.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cpp\detail\remove.h
@@ -380,6 +397,8 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\c
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cpp\detail\unique.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cpp\detail\unique_by_key.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cpp\execution_policy.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cpp\memory_resource.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cpp\pointer.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\config.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\detail\adjacent_difference.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\detail\assign_value.h
@@ -471,6 +490,7 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\c
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\detail\parallel_for.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\detail\partition.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\detail\par_to_seq.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\detail\pointer.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\detail\reduce.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\detail\reduce_by_key.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\detail\remove.h
@@ -496,6 +516,8 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\c
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\detail\util.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\error.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\execution_policy.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\memory_resource.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\cuda\pointer.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\detail\adl\adjacent_difference.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\detail\adl\assign_value.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\thrust\system\detail\adl\copy.h
