@@ -77,7 +77,15 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CudaCompile Include="..\libs\cuda-hashing-algos-master\md5.cu" />
     <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="md5-cuda.cu" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\lib\md5.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="md5-cuda.cuh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

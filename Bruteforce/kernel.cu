@@ -6,7 +6,12 @@
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
-#include "../libs/src/hl_md5.h"
+#include "../lib/md5.h"
+#include "../libs/Bluebird Library/BB.h"
+#include "../libs/cuda-hashing-algos-master/config.h"
+#include "../libs/cuda-hashing-algos-master/md5.cuh"
+#include "md5-cuda.cuh"
+#include "md5-cuda.cu"
 using namespace std;
 
 cudaError_t addWithCuda(int* c, const int* a, const int* b, unsigned int size);
@@ -46,8 +51,26 @@ thrust::host_vector<char> GetLetters() {
     return letters;
 }
 
+thrust::host_vector<string> combinations;
 //печатает все варианты комбинаций символов chars
-void printCombinations(const thrust::host_vector<char>& chars, unsigned size, thrust::host_vector<char>& line, ofstream& myfile) {
+void printCombinations(const thrust::host_vector<char>& chars, unsigned size, thrust::host_vector<char>& line) {
+    for (unsigned i = 0; i < chars.size(); i++) {
+        line.push_back(chars[i]);
+        if (size <= 1) { // Condition that prevents infinite loop in recursion
+            string pass;
+            for (const auto& j : line)
+                pass += j;
+            //cout << pass << endl;
+            combinations.push_back(pass);
+            line.erase(line.end() - 1);
+        }
+        else {
+            printCombinations(chars, size - 1, line); // Recursion happens here
+            line.erase(line.end() - 1);
+        }
+    }
+}
+/*void printCombinations(const thrust::host_vector<char>& chars, unsigned size, thrust::host_vector<char>& line, ofstream& myfile) {
     for (unsigned i = 0; i < chars.size(); i++) {
         line.push_back(chars[i]);
         if (size <= 1) { // Condition that prevents infinite loop in recursion
@@ -61,7 +84,7 @@ void printCombinations(const thrust::host_vector<char>& chars, unsigned size, th
             line.erase(line.end() - 1);
         }
     }
-}
+}*/
 thrust::host_vector<string> FileToVector(string file_name) {
 
     // Open the File
@@ -80,17 +103,20 @@ thrust::host_vector<string> FileToVector(string file_name) {
 
 //метод, который передается в поток на GPU. просто выводит длину пароля у данного потока и сам пароль(кол-во потоков = кол-во паролей) 
 __global__ void SearchPassword(char **passwords, int *sizes) {
-    printf("Size: %d \n", sizes[threadIdx.x]);
+    //printf("Size: %d \n", sizes[threadIdx.x]);
     //printf("Size: %c \n", passwords[0][0]);
+   // MD5 md5;
+    //cout << md5("hello");
+    //printf("Size: %c \n", md5("hello"));
     for(int i = 0; i < sizes[threadIdx.x]; i++)
-        printf("Passw: %c \n", passwords[threadIdx.x][i]);
+        printf("%c; %d \n", passwords[threadIdx.x][i], threadIdx.x);
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int main()
 {
 #pragma region MyRegion
-
-
 
     /*ofstream myfile;
     myfile.open("example.txt");
@@ -118,6 +144,61 @@ int main()
     //cout << passwords.size() << endl;
 
     //создание двумерного массива с паролями, строка массива = пароль, длина пароля может быть переменной и сохраняется в массив sizes[номер строки]
+    std::string data = "test";
+    std::string data_hex_digest;
+
+    md5 hash;
+    hash.update(data.begin(), data.end());
+    hash.hex_digest(data_hex_digest);
+
+    std::cout << data_hex_digest << std::endl;
+
+    MD5 md5;
+    cout << md5("test");
+
+   // mcm_cuda_md5_hash_batch(byte, word, out, outw);
+    //cout << wrapper->getHashFromString("yoda");
+    
+    thrust::host_vector<char> pass;
+    for (int i = 1; i < 3; i++) {
+        unsigned size = i;
+        thrust::host_vector<char> line;
+        printCombinations(GetLetters(), size, line);
+    }
+
+    const int comb_lines = combinations.size();
+    char** all_combinations_array = new char* [comb_lines];
+    int* password_sizes = new int[comb_lines];
+
+    for (int i = 0; i < comb_lines; i++) {
+        string s = combinations[i]; 
+        all_combinations_array[i] = new char[s.length()];
+        strcpy(all_combinations_array[i], s.c_str());
+        password_sizes[i] = s.length();
+    }
+
+    char** dev_all_combinations_array;//указатель на двумерный массив, который мы передадим в gpu
+    cudaMalloc((void**)&dev_all_combinations_array, comb_lines * sizeof(char*));//выделяем память на видеокарте и сохраняем указатель на нее в dev_device_passw. второй параметр - кол-во памяти, мб указан неверно
+
+
+    char* dev_line[10000];//указатель на одномерный массив указателей размерном lines, чтобы в него сохранить каждую строку исходного массива с паролями
+    for (int i = 0; i < comb_lines; i++) {
+        cudaMalloc((void**)&dev_line[i], sizeof(char) * password_sizes[i]);
+        cudaMemcpy(dev_line[i], all_combinations_array[i], sizeof(char) * password_sizes[i], cudaMemcpyHostToDevice);
+    }
+
+    cudaMemcpy(dev_all_combinations_array, dev_line, sizeof(char*) * comb_lines, cudaMemcpyHostToDevice);//копируем в указатель dev_device_passw указатель на память dev_line_passw
+
+    int* dev_sizes;//указатель для передачи массива с размерами строк
+
+    cudaMalloc((void**)&dev_sizes, sizeof(int) * comb_lines);//выделяем память размером с массив
+    cudaMemcpy(dev_sizes, password_sizes, sizeof(int) * comb_lines, cudaMemcpyHostToDevice);//копируем указатель на массив sizes 
+
+    SearchPassword << <1, 100 >> > (dev_all_combinations_array, dev_sizes);//запуск массива потоков [1][10] (т.е. 1 строка потоков из 10 потоков = 10 потоков), ошибка так и должна быть
+
+#pragma region old
+
+    /*
     const int lines = 10, columns = 4; 
     char** passw = new char* [lines];//массив с паролями
     int* sizes = new int[lines];//массив с длинами строк
@@ -164,7 +245,7 @@ int main()
         }
         cout << endl;
     }
-    */
+    
 
     char** dev_device_passw;//указатель на двумерный массив, который мы передадим в gpu
     cudaMalloc((void**)&dev_device_passw, lines * sizeof(char*));//выделяем память на видеокарте и сохраняем указатель на нее в dev_device_passw. второй параметр - кол-во памяти, мб указан неверно
@@ -188,6 +269,8 @@ int main()
     cudaFree(dev_device_passw);
     cudaFree(dev_sizes);
     cudaFree(dev_line_passw);
+    */
+#pragma endregion
 
     return 0;
 }
